@@ -5,7 +5,8 @@ public class BankTransactionAnalyzerSimple {
 
         final BankStatementAnalyzer bankStatementAnalyzer = new BankStatementAnalyzer();
         final BankStatementParser bankStatementParser = new BankStatementCSVParser();
+        final Exporter exporter = new HtmlExporter();
 
-        bankStatementAnalyzer.analyze(args[0], bankStatementParser);
+        bankStatementAnalyzer.analyze(args[0], bankStatementParser, exporter);
     }
 }
