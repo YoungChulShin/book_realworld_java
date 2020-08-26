@@ -20,8 +20,8 @@ public class BankStatementAnalyzer {
     }
 
     private void collectSummary(final BankStatementProcessor bankStatementProcessor) {
-        System.out.println("The total for all transactions is " + bankStatementProcessor.calculateTotalAmount());
+        System.out.println("The total for all transactions is " + bankStatementProcessor.summarizeTransactions(((accumulator, bankTransaction) -> accumulator + bankTransaction.getAmount())));
         System.out.println("Transactions in January is " + bankStatementProcessor.calculateTotalInMonth(Month.JANUARY));
-        System.out.println("The total salary received is " + bankStatementProcessor.calculateTotalForCategory("Salary"));
+        System.out.println("The total salary received is " + bankStatementProcessor.findTransactions((bankTransaction -> bankTransaction.getDescription().equals("Salary"))));
     }
 }
