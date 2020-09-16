@@ -4,36 +4,43 @@ import java.util.*;
 
 public class Twootr {
 
-    private Map<String, User> userList = new HashMap<>();
+    private final UserRepository userRepository;
+
+    public Twootr(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     public Optional<SenderEndPoint> onLogin(String userId, String password, ReceiverEndPoint receiverEndPoint) {
 
-        if (!userList.containsKey(userId)) {
-            return Optional.empty();
-        }
+        Objects.requireNonNull(userId, "userId");
+        Objects.requireNonNull(password, "password");
 
-        User userOfSameId = userList.get(userId);
-        byte[] hashedPassword = KeyGenerator.hash(password, userOfSameId.getSalt());
+        Optional<User> authenticatedUser = userRepository
+                .get(userId)
+                .filter(userOfSameId -> {
+                    byte[] hashedPassword = KeyGenerator.hash(password, userOfSameId.getSalt());
+                    return Arrays.equals(hashedPassword, userOfSameId.getPassword());
+                });
 
+        authenticatedUser.ifPresent(user -> {
+           user.onLogon(receiverEndPoint);
+           
+        });
 
-
-        if (!Arrays.equals(userOfSameId.getPassword(),hashedPassword)) {
-            return Optional.empty();
-        }
-
-        return Optional.of(new SenderEndPoint());
+        return authenticatedUser.map(user -> new SenderEndPoint(user, this));
     }
 
     public RegistrationStatus onRegisterUser(String userId, String password) {
-        if (userList.containsKey(userId)) {
-            return RegistrationStatus.DUPLICATE;
-        }
-
         byte[] salt = KeyGenerator.newSalt();
         byte[] hashedPassword = KeyGenerator.hash(password, salt);
         User user = new User(userId, hashedPassword, salt);
 
-        userList.put(userId, user);
-        return RegistrationStatus.SUCCESS;
+        return userRepository.add(user) ? RegistrationStatus.SUCCESS : RegistrationStatus.DUPLICATE;
+    }
+
+    public FollowStatus onFollow(User user, String userIdToFollow) {
+        return userRepository.get(userIdToFollow)
+                .map(userToFollow -> userRepository.follow(user, userToFollow))
+                .orElse(FollowStatus.INVALID_USER);
     }
 }
