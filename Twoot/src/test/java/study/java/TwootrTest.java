@@ -4,13 +4,17 @@ import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import study.java.in_memory.InMemoryTwootRepository;
 import study.java.in_memory.InMemoryUserRepository;
 
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;
+import static study.java.TestData.twootAt;
 
 public class TwootrTest {
+
+    private static final Position POSITION_1 = new Position(0);
 
     private final ReceiverEndPoint receiverEndPoint = mock(ReceiverEndPoint.class);
     private Twootr twootr;
@@ -18,10 +22,11 @@ public class TwootrTest {
     private SenderEndPoint senderEndPoint;
 
     private final UserRepository userRepository = new InMemoryUserRepository();
+    private final TwootRepository twootRepository = new InMemoryTwootRepository();
 
     @Before
     public void setUp() {
-        twootr = new Twootr(userRepository);
+        twootr = new Twootr(userRepository, twootRepository);
         twootr.onRegisterUser(TestData.USER_ID, TestData.PASSWORD);
         twootr.onRegisterUser(TestData.OTHER_USER_ID, TestData.OTHER_PASSWORD);
     }
@@ -83,6 +88,35 @@ public class TwootrTest {
         Assertions.assertThat(followStatus).isEqualTo(FollowStatus.INVALID_USER);
     }
 
+    @Test
+    public void shouldReceiveTwootsFromFollowedUser() {
+        String id = "1";
+
+        logon();
+
+        senderEndPoint.onFollow(TestData.OTHER_USER_ID);
+
+        SenderEndPoint otherSenderEndPoint = otherLogon();
+        otherSenderEndPoint.onSendTwoot(id, TestData.TWOOT);
+
+        Mockito.verify(twootRepository).add(id, TestData.OTHER_USER_ID, TestData.TWOOT);
+        Mockito.verify(receiverEndPoint).onTwoot(new Twoot(id, TestData.OTHER_USER_ID, TestData.TWOOT, new Position(0)));
+    }
+
+    @Test
+    public void shouldReceiveReplayOfTwootsAfterLogoff() {
+        String id = "1";
+
+        userFollowsOtherUser();
+
+        SenderEndPoint otherSenderEndPoint = otherLogon();
+        otherSenderEndPoint.onSendTwoot(id, TestData.TWOOT);
+
+        logon();
+
+        Mockito.verify(receiverEndPoint).onTwoot(twootAt(id, POSITION_1));
+    }
+
     private void logon() {
         this.senderEndPoint = logon(TestData.USER_ID, receiverEndPoint);
     }
@@ -92,5 +126,17 @@ public class TwootrTest {
         Optional<SenderEndPoint> endPoint = twootr.onLogin(userId, TestData.PASSWORD, receiverEndPoint);
         Assertions.assertThat(endPoint.isPresent()).isTrue();
         return endPoint.get();
+    }
+
+    private SenderEndPoint otherLogon() {
+        return logon(TestData.OTHER_USER_ID, mock(ReceiverEndPoint.class));
+    }
+
+    private void userFollowsOtherUser() {
+        logon();
+
+        senderEndPoint.onFollow(TestData.OTHER_USER_ID);
+
+        senderEndPoint.onLogoff();
     }
 }

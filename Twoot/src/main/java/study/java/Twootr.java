@@ -5,9 +5,12 @@ import java.util.*;
 public class Twootr {
 
     private final UserRepository userRepository;
+    private final TwootRepository twootRepository;
 
-    public Twootr(UserRepository userRepository) {
+    public Twootr(UserRepository userRepository, TwootRepository twootRepository) {
+
         this.userRepository = userRepository;
+        this.twootRepository = twootRepository;
     }
 
     public Optional<SenderEndPoint> onLogin(String userId, String password, ReceiverEndPoint receiverEndPoint) {
@@ -24,7 +27,7 @@ public class Twootr {
 
         authenticatedUser.ifPresent(user -> {
            user.onLogon(receiverEndPoint);
-           
+
         });
 
         return authenticatedUser.map(user -> new SenderEndPoint(user, this));
@@ -42,5 +45,20 @@ public class Twootr {
         return userRepository.get(userIdToFollow)
                 .map(userToFollow -> userRepository.follow(user, userToFollow))
                 .orElse(FollowStatus.INVALID_USER);
+    }
+
+
+    public Position onSendTwoot(String id, User user, String content) {
+
+        String userId = user.getId();
+        Twoot twoot = twootRepository.add(id, userId, content);
+        user.getFollowers()
+                .filter(User::isLoggedOn)
+                .forEach(follower -> {
+                    follower.receiveTwoot(twoot);
+                    userRepository.update(follower);
+                });
+
+        return twoot.getPosition();
     }
 }

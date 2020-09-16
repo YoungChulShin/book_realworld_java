@@ -2,6 +2,7 @@ package study.java;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Stream;
 
 public class User {
 
@@ -38,4 +39,18 @@ public class User {
     public byte[] getPassword() { return password; }
 
     public byte[] getSalt() { return salt; }
+
+    public Stream<User> getFollowers() { return followers.stream(); }
+
+    public boolean isLoggedOn() { return receiverEndPoint != null; }
+
+    public boolean receiveTwoot(Twoot twoot) {
+        if (isLoggedOn()) {
+            receiverEndPoint.onTwoot(twoot);
+
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
