@@ -1,9 +1,12 @@
 plugins {
     id 'java'
+    id 'application'
 }
 
 group 'study.java'
 version '1.0-SNAPSHOT'
+
+mainClassName = "BankTransactionAnalyzerSimple"
 
 repositories {
     mavenCentral()
