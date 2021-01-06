@@ -1,4 +1,5 @@
 import java.time.Month;
+import java.util.ArrayList;
 import java.util.List;
 
 public class BankStatementProcessor {
@@ -40,5 +41,15 @@ public class BankStatementProcessor {
         return total;
     }
 
+    public List<BankTransaction> findTransactionsGreaterThanEqual(final int amout) {
+        final List<BankTransaction> result = new ArrayList<>();
+        for(BankTransaction bankTransaction : bankTransactions) {
+            if (bankTransaction.getAmount() >= amout) {
+                result.add(bankTransaction);
+            }
+        }
+
+        return result;
+    }
 
 }
