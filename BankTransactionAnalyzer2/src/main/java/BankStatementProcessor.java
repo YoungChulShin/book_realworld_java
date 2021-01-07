@@ -41,10 +41,23 @@ public class BankStatementProcessor {
         return total;
     }
 
+    /*
     public List<BankTransaction> findTransactionsGreaterThanEqual(final int amout) {
         final List<BankTransaction> result = new ArrayList<>();
         for(BankTransaction bankTransaction : bankTransactions) {
             if (bankTransaction.getAmount() >= amout) {
+                result.add(bankTransaction);
+            }
+        }
+
+        return result;
+    }
+    */
+
+    public List<BankTransaction> findTransactionsGreaterThanEqual(BankTransactionFilter bankTransactionFilter) {
+        final List<BankTransaction> result = new ArrayList<>();
+        for(BankTransaction bankTransaction : bankTransactions) {
+            if (bankTransactionFilter.test(bankTransaction)) {
                 result.add(bankTransaction);
             }
         }
