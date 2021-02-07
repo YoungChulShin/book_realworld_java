@@ -19,8 +19,8 @@ class BusinessRuleEngineTest {
         final Facts facts = new Facts();
         final BusinessRuleEngine businessRuleEngine = new BusinessRuleEngine(facts);
 
-        businessRuleEngine.addAction((f) -> { });
-        businessRuleEngine.addAction((f) -> { });
+        businessRuleEngine.addRule((f) -> { });
+        businessRuleEngine.addRule((f) -> { });
 
         assertEquals(2, businessRuleEngine.count());
     }
@@ -29,23 +29,23 @@ class BusinessRuleEngineTest {
     void shouldExecuteOneAction() {
         final Facts facts = new Facts();
         final BusinessRuleEngine businessRuleEngine = new BusinessRuleEngine(facts);
-        final Action mockAction = mock(Action.class);
+        final Rule mockRule = mock(Rule.class);
 
-        businessRuleEngine.addAction(mockAction);
+        businessRuleEngine.addRule(mockRule);
         businessRuleEngine.run();
 
-        verify(mockAction).execute(facts);
+        verify(mockRule).perform(facts);
     }
 
     @Test
     void shouldPerformAnActionWithFacts() {
-        final Action mockAction = mock(Action.class);
+        final Rule mockRule = mock(Rule.class);
         final Facts mockFacts = mock(Facts.class);
         final BusinessRuleEngine businessRuleEngine = new BusinessRuleEngine(mockFacts);
 
-        businessRuleEngine.addAction(mockAction);
+        businessRuleEngine.addRule(mockRule);
         businessRuleEngine.run();
 
-        verify(mockAction).execute(mockFacts);
+        verify(mockRule).perform(mockFacts);
     }
 }

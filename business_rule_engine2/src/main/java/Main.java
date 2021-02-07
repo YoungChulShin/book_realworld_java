@@ -27,12 +27,22 @@ public class Main {
 //            facts.addFacts("forecastedAmount", String.valueOf(forecastedAmount));
 //        });
 
-        final Condition condition = (facts) -> "CEO".equals(facts.getFacts("jobTitle"));
-        final Action action = (facts) -> {
-            var name = facts.getFacts("name");
-            // Mail 전달
-        };
 
-        final Rule rule = new DefaultRule(condition, action);
+//        final Condition condition = (facts) -> "CEO".equals(facts.getFacts("jobTitle"));
+//        final Action action = (facts) -> {
+//            var name = facts.getFacts("name");
+//            // Mail 전달
+//        };
+//        final Rule rule = new DefaultRule(condition, action);
+//
+
+        // Rule Builder 사용
+        Rule rule = new RuleBuilder()
+                .when(facts -> "CEO".equals(facts.getFacts("jobTitle")))
+                .then(facts -> {
+                    var name = facts.getFacts("name");
+                    // Mail 전달
+                })
+                .createRule();
     }
 }
