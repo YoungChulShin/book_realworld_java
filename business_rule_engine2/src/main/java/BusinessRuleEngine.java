@@ -18,6 +18,6 @@ public class BusinessRuleEngine {
     }
 
     public void run() {
-        throw new UnsupportedOperationException();
+        actions.forEach(Action::execute);
     }
 }
