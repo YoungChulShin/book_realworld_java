@@ -5,6 +5,7 @@ import java.util.*;
 public class Twootr {
 
     private Map<String, User> users = new HashMap<>();
+    private Map<String, User> FollowUsers = new HashMap<>();
 
     public Optional<SenderEndPoint> onLogon(String userId, String password, ReceiverEndPoint receiver) {
         SenderEndPoint sender = null;
@@ -12,7 +13,7 @@ public class Twootr {
             User user = users.get(userId);
             byte[] hashedPassword = KeyGenerator.hash(password, user.getSalt());
             if (Arrays.equals(hashedPassword, user.getPassword())) {
-                sender = new SenderEndPoint();
+                sender = new SenderEndPoint(user, this);
             }
         }
 
@@ -32,4 +33,12 @@ public class Twootr {
         }
     }
 
+    public FollowStatus onFollow(User user, String userIdToFollow) {
+        if (users.containsKey(userIdToFollow)) {
+            User followUser = users.get(userIdToFollow);
+            return followUser.addFollowers(user);
+        } else {
+            return FollowStatus.INVALID_USER;
+        }
+    }
 }
