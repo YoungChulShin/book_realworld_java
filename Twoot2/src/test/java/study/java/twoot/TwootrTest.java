@@ -18,6 +18,7 @@ class TwootrTest {
     void setup() {
         receiverEndPoint = mock(ReceiverEndPoint.class);
         twootr = new Twootr();
+        twootr.onRegister(TestData.USER_ID, TestData.PASSWORD);
     }
 
     @Test
