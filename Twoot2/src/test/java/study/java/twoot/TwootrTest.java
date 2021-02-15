@@ -64,6 +64,15 @@ class TwootrTest {
         assertEquals(FollowStatus.ALREADY_FOLLOWING, followStatus);
     }
 
+    @Test
+    void shouldNotFollowInvalidUser() {
+        logon();
+
+        FollowStatus followStatus = senderEndPoint.onFollow(TestData.NOT_A_USER);
+
+        assertEquals(FollowStatus.INVALID_USER, followStatus);
+    }
+
     void logon() {
         this.senderEndPoint = logon(TestData.USER_ID, receiverEndPoint);
     }
