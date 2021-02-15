@@ -11,10 +11,16 @@ public class User {
     private Set<String> following = new HashSet<>();
     private Set<User> followers = new HashSet<>();
 
+    private ReceiverEndPoint receiverEndPoint;
+
     public User(String id, byte[] password, byte[] salt) {
         this.id = id;
         this.password = password;
         this.salt = salt;
+    }
+
+    public void onLogon(ReceiverEndPoint receiverEndPoint) {
+        this.receiverEndPoint = receiverEndPoint;
     }
 
     public FollowStatus addFollowers(User user) {
@@ -23,6 +29,19 @@ public class User {
             return FollowStatus.SUCCESS;
         } else {
             return FollowStatus.ALREADY_FOLLOWING;
+        }
+    }
+
+    public boolean isLoggedOn() {
+        return receiverEndPoint != null;
+    }
+
+    public boolean receiveTwoot(Twoot twoot) {
+        if (isLoggedOn()) {
+            receiverEndPoint.onTwoot(twoot);
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -36,5 +55,9 @@ public class User {
 
     public byte[] getSalt() {
         return salt;
+    }
+
+    public Set<User> getFollowers() {
+        return followers;
     }
 }

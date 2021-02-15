@@ -13,6 +13,7 @@ public class Twootr {
             User user = users.get(userId);
             byte[] hashedPassword = KeyGenerator.hash(password, user.getSalt());
             if (Arrays.equals(hashedPassword, user.getPassword())) {
+                user.onLogon(receiver);
                 sender = new SenderEndPoint(user, this);
             }
         }
