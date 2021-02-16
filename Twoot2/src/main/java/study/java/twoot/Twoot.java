@@ -1,5 +1,7 @@
 package study.java.twoot;
 
+import java.util.Objects;
+
 public class Twoot {
     private String id;
     private String senderId;
@@ -21,5 +23,18 @@ public class Twoot {
 
     public String getContent() {
         return content;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Twoot twoot = (Twoot) o;
+        return Objects.equals(id, twoot.id) && Objects.equals(senderId, twoot.senderId) && Objects.equals(content, twoot.content);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, senderId, content);
     }
 }

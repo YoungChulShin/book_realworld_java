@@ -8,6 +8,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 class TwootrTest {
 
@@ -73,12 +74,26 @@ class TwootrTest {
         assertEquals(FollowStatus.INVALID_USER, followStatus);
     }
 
-    void logon() {
-        this.senderEndPoint = logon(TestData.USER_ID, receiverEndPoint);
+    @Test
+    void shouldReceiveTwootsFromFollowedUser() {
+        final String id = "1";
+
+        logon();
+
+        senderEndPoint.onFollow(TestData.OTHER_USER_ID);
+
+        SenderEndPoint otherSenderEndPoint = logon(TestData.OTHER_USER_ID,TestData.OTHER_PASSWORD, mock(ReceiverEndPoint.class));
+        otherSenderEndPoint.onSendTwoot(id, TestData.TWOOT);
+
+        verify(receiverEndPoint).onTwoot(new Twoot(id, TestData.OTHER_USER_ID, TestData.TWOOT));
     }
 
-    SenderEndPoint logon(String userId, ReceiverEndPoint receiverEndPoint) {
-        Optional<SenderEndPoint> senderEndPoint = twootr.onLogon(userId, TestData.PASSWORD, receiverEndPoint);
+    void logon() {
+        this.senderEndPoint = logon(TestData.USER_ID, TestData.PASSWORD, receiverEndPoint);
+    }
+
+    SenderEndPoint logon(String userId, String password, ReceiverEndPoint receiverEndPoint) {
+        Optional<SenderEndPoint> senderEndPoint = twootr.onLogon(userId, password, receiverEndPoint);
         assertTrue(senderEndPoint.isPresent());
         return senderEndPoint.get();
     }
