@@ -24,7 +24,7 @@ public class Twootr {
     public RegistrationStatus onRegister(String userId, String password) {
         byte[] salt = KeyGenerator.newSalt();
         byte[] hashedPassword = KeyGenerator.hash(password, salt);
-        User user = new User(userId, hashedPassword, salt);
+        User user = new User(userId, hashedPassword, salt, Position.INITIAL_POSITION);
 
         if (users.containsKey(userId)) {
             return RegistrationStatus.DUPLICATE;
@@ -42,4 +42,19 @@ public class Twootr {
             return FollowStatus.INVALID_USER;
         }
     }
+
+    public Position onSendTwoot(String id, User user, String content) {
+        final String userId = user.getId();
+        // todo - position 정보 확인 필요
+        final Twoot twoot = new Twoot(id, userId, content, Position.INITIAL_POSITION);
+        user.getFollowers()
+                .stream()
+                .filter(User::isLoggedOn)
+                .forEach(follower -> follower.receiveTwoot(twoot));
+
+
+        return twoot.getPosition();
+    }
+
+
 }

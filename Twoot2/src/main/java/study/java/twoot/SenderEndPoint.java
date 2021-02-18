@@ -23,12 +23,9 @@ public class SenderEndPoint {
         return twootr.onFollow(user, userIdToFollow);
     }
 
-    public void onSendTwoot(String id, String content) {
-        final String userId = user.getId();
-        final Twoot twoot = new Twoot(id, userId, content);
-        user.getFollowers()
-                .stream()
-                .filter(User::isLoggedOn)
-                .forEach(follower -> follower.receiveTwoot(twoot));
+    public Position onSendTwoot(String id, String content) {
+        Objects.requireNonNull(content, "content");
+
+        return twootr.onSendTwoot(id, user, content);
     }
 }

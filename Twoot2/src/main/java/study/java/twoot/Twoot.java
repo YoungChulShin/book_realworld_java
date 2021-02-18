@@ -6,11 +6,17 @@ public class Twoot {
     private String id;
     private String senderId;
     private String content;
+    private Position position;
 
-    public Twoot(String id, String senderId, String content) {
+    public Twoot(String id, String senderId, String content, Position position) {
         this.id = id;
         this.senderId = senderId;
         this.content = content;
+        this.position = position;
+    }
+
+    public boolean isAfter(Position otherPosition) {
+        return position.getValue() > otherPosition.getValue();
     }
 
     public String getId() {
@@ -25,16 +31,20 @@ public class Twoot {
         return content;
     }
 
+    public Position getPosition() {
+        return position;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Twoot twoot = (Twoot) o;
-        return Objects.equals(id, twoot.id) && Objects.equals(senderId, twoot.senderId) && Objects.equals(content, twoot.content);
+        return id.equals(twoot.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, senderId, content);
+        return id.hashCode();
     }
 }

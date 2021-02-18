@@ -85,7 +85,7 @@ class TwootrTest {
         SenderEndPoint otherSenderEndPoint = logon(TestData.OTHER_USER_ID,TestData.OTHER_PASSWORD, mock(ReceiverEndPoint.class));
         otherSenderEndPoint.onSendTwoot(id, TestData.TWOOT);
 
-        verify(receiverEndPoint).onTwoot(new Twoot(id, TestData.OTHER_USER_ID, TestData.TWOOT));
+        verify(receiverEndPoint).onTwoot(new Twoot(id, TestData.OTHER_USER_ID, TestData.TWOOT, new Position(0)));
     }
 
     void logon() {

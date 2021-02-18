@@ -7,16 +7,17 @@ public class User {
     private String id;
     private byte[] password;
     private byte[] salt;
-
     private Set<String> following = new HashSet<>();
     private Set<User> followers = new HashSet<>();
 
+    private Position lastSeenPosition;
     private ReceiverEndPoint receiverEndPoint;
 
-    public User(String id, byte[] password, byte[] salt) {
+    public User(String id, byte[] password, byte[] salt, Position lastSeenPosition) {
         this.id = id;
         this.password = password;
         this.salt = salt;
+        this.lastSeenPosition = lastSeenPosition;
     }
 
     public void onLogon(ReceiverEndPoint receiverEndPoint) {
@@ -39,6 +40,7 @@ public class User {
     public boolean receiveTwoot(Twoot twoot) {
         if (isLoggedOn()) {
             receiverEndPoint.onTwoot(twoot);
+            lastSeenPosition = twoot.getPosition();
             return true;
         } else {
             return false;
@@ -59,5 +61,9 @@ public class User {
 
     public Set<User> getFollowers() {
         return followers;
+    }
+
+    public Position getLastSeenPosition() {
+        return lastSeenPosition;
     }
 }
