@@ -28,5 +28,11 @@ public class TwootQuery {
         return inUsers != null && !inUsers.isEmpty();
     }
 
+    public Set<String> getInUsers() {
+        return inUsers;
+    }
 
+    public Position getLastSeenPosition() {
+        return lastSeenPosition;
+    }
 }
