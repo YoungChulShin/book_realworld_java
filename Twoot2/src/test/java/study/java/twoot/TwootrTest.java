@@ -3,6 +3,7 @@ package study.java.twoot;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import study.java.twoot.in_memory.InMemoryUserRepository;
 
 import java.util.Optional;
 
@@ -19,7 +20,7 @@ class TwootrTest {
     @BeforeEach
     void setup() {
         receiverEndPoint = mock(ReceiverEndPoint.class);
-        twootr = new Twootr();
+        twootr = new Twootr(new InMemoryUserRepository());
         twootr.onRegister(TestData.USER_ID, TestData.PASSWORD);
         twootr.onRegister(TestData.OTHER_USER_ID, TestData.OTHER_PASSWORD);
     }

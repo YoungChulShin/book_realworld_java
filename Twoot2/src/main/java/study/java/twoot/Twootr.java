@@ -1,11 +1,18 @@
 package study.java.twoot;
 
+import study.java.twoot.in_memory.InMemoryUserRepository;
+
 import java.util.*;
 
 public class Twootr {
 
     private Map<String, User> users = new HashMap<>();
     private Map<String, User> FollowUsers = new HashMap<>();
+    private final UserRepository userRepository;
+
+    public Twootr(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     public Optional<SenderEndPoint> onLogon(String userId, String password, ReceiverEndPoint receiver) {
         SenderEndPoint sender = null;
@@ -19,6 +26,23 @@ public class Twootr {
         }
 
         return Optional.ofNullable(sender);
+    }
+
+    public Optional<SenderEndPoint> onLogon2(String userId, String password, ReceiverEndPoint receiver) {
+        Optional<User> authenticatedUser = userRepository
+                .get(userId)
+                .filter(userOfSameId ->
+                {
+                    byte[] hashedPassword = KeyGenerator.hash(password, userOfSameId.getSalt());
+                    return Arrays.equals(hashedPassword, userOfSameId.getPassword());
+                });
+
+        authenticatedUser.ifPresent(user -> {
+            user.onLogon(receiver);
+            // do something
+        });
+
+        return authenticatedUser.map(user -> new SenderEndPoint(user, this));
     }
 
     public RegistrationStatus onRegister(String userId, String password) {
